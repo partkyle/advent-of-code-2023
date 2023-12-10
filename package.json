@@ -1,0 +1,27 @@
+{
+  "name": "aoc2023",
+  "version": "1.0.0",
+  "description": "Advent of Code 2023 - solutions",
+  "type": "module",
+  "scripts": {
+    "start": "aocrunner day",
+    "build": "aocrunner build",
+    "format": "prettier -w src",
+    "update:readme": "aocrunner update:readme"
+  },
+  "keywords": [
+    "aoc"
+  ],
+  "author": "Kyle Partridge",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash": "^4.14.202",
+    "@types/node": "^16.11.6",
+    "aocrunner": "^1.9.6",
+    "lodash": "^4.17.21",
+    "prettier": "^2.8.0"
+  },
+  "engines": {
+    "node": ">=16.13.0"
+  }
+}
