@@ -29,3 +29,13 @@
  *     import { myUtil } from '../utils'
  *
  */
+
+import { log } from "console"
+
+function logSimpleMap<T>(m: T[][], joiner: string = "") {
+  for (let line of m) {
+    log(line.join(joiner))
+  }
+}
+
+export default logSimpleMap
