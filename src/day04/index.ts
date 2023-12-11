@@ -8,7 +8,7 @@ class Card {
   selected: Array<string>
 
   constructor(line: string) {
-    [this.winning, this.selected] = line
+    ;[this.winning, this.selected] = line
       .split(": ")[1]
       .split(" | ")
       .map((side) => side.split(" ").filter((element) => element != ""))

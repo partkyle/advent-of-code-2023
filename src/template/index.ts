@@ -1,9 +1,12 @@
 import run from "aocrunner"
+import { log } from "console"
 
 const parseInput = (rawInput: string) => rawInput
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
+
+  log(input)
 
   return
 }

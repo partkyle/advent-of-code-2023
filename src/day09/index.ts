@@ -2,21 +2,23 @@ import run from "aocrunner"
 import { log } from "console"
 import _, { result } from "lodash"
 
-
 class Input {
   histories: number[][] = []
   constructor(rawInput: string) {
-    this.histories = rawInput.split('\n').map( line => line.split(' ').map( s => parseInt(s) ) )
+    this.histories = rawInput
+      .split("\n")
+      .map((line) => line.split(" ").map((s) => parseInt(s)))
   }
 }
 
 const parseInput = (rawInput: string) => new Input(rawInput)
 
-const diff = (arr: number[]): number[] => _.range(0, arr.length-1).map( i => arr[i+1] - arr[i] )
+const diff = (arr: number[]): number[] =>
+  _.range(0, arr.length - 1).map((i) => arr[i + 1] - arr[i])
 
 function findSeq(history: number[]) {
   let results = [history]
-  while (!results[results.length - 1].every(e => e == 0)) {
+  while (!results[results.length - 1].every((e) => e == 0)) {
     results.push(diff(results[results.length - 1]))
   }
   return results
@@ -24,18 +26,18 @@ function findSeq(history: number[]) {
 
 function calcNewElement(diffList: number[][]) {
   for (let i = diffList.length - 2; i >= 0; i--) {
-    let prev = diffList[i+1]
+    let prev = diffList[i + 1]
     let curr = diffList[i]
 
-    curr.push(curr[curr.length-1] + prev[prev.length-1])
+    curr.push(curr[curr.length - 1] + prev[prev.length - 1])
   }
 
-  return diffList[0][diffList[0].length-1]
+  return diffList[0][diffList[0].length - 1]
 }
 
 function calcFirstElement(diffList: number[][]) {
   for (let i = diffList.length - 2; i >= 0; i--) {
-    let prev = diffList[i+1]
+    let prev = diffList[i + 1]
     let curr = diffList[i]
 
     curr.unshift(curr[0] - prev[0])
@@ -44,19 +46,19 @@ function calcFirstElement(diffList: number[][]) {
   return diffList[0][0]
 }
 
-
-
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  let news = input.histories.map(history => calcNewElement(findSeq(history)))
+  let news = input.histories.map((history) => calcNewElement(findSeq(history)))
   return _.sum(news)
 }
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  let news = input.histories.map(history => calcFirstElement(findSeq(history)))
+  let news = input.histories.map((history) =>
+    calcFirstElement(findSeq(history)),
+  )
   return _.sum(news)
 }
 
@@ -90,5 +92,3 @@ run({
   trimTestInputs: true,
   onlyTests: false,
 })
-
-

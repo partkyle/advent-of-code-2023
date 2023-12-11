@@ -11,7 +11,6 @@ let regex = /(\d)/g
 // will it mess up at the end?
 let regexAlpha = /(?=(\d|one|two|three|four|five|six|seven|eight|nine))/g
 
-
 const sanitize = (s: string) => {
   s = s.replace("one", "1")
   s = s.replace("two", "2")
@@ -32,7 +31,7 @@ const part1 = (rawInput: string) => {
   let digitValues = input.map((line) => {
     let matches = Array.from(line.matchAll(regex))
 
-    return parseInt(matches[0][0] + matches[matches.length-1][0])
+    return parseInt(matches[0][0] + matches[matches.length - 1][0])
   })
 
   return _.sum(digitValues)
@@ -45,15 +44,17 @@ const part2 = (rawInput: string) => {
     let matches = Array.from(line.matchAll(regexAlpha))
 
     let left = sanitize(matches[0][1])
-    let right = sanitize(matches[matches.length-1][1])
+    let right = sanitize(matches[matches.length - 1][1])
     let result = parseInt(left + right)
 
-    log(line, '=>', result)
+    log(line, "=>", result)
 
     return result
   })
 
-  throw `${_.sum(digitValues)} is not the answer. the regex method is flawed somewhere.`
+  throw `${_.sum(
+    digitValues,
+  )} is not the answer. the regex method is flawed somewhere.`
   return _.sum(digitValues)
 }
 

@@ -4,10 +4,15 @@ import { log } from "console"
 import _ from "lodash"
 import { arrayBuffer } from "stream/consumers"
 
-const deck = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
+const deck = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
 
 const convertToHex = (hand: string): string => {
-  return hand.replace(/A/g, "E").replace(/K/g, "D").replace(/Q/g, "C").replace(/J/g, "B").replace(/T/g, "A")
+  return hand
+    .replace(/A/g, "E")
+    .replace(/K/g, "D")
+    .replace(/Q/g, "C")
+    .replace(/J/g, "B")
+    .replace(/T/g, "A")
 }
 
 const compareCards = (a: string, b: string): number => {
@@ -15,9 +20,16 @@ const compareCards = (a: string, b: string): number => {
   return deck.indexOf(b) - deck.indexOf(a)
 }
 
-type HandType = "5" | "4" | "full-house" | "3" | "2-pair" | "1-pair" | "high-card";
+type HandType =
+  | "5"
+  | "4"
+  | "full-house"
+  | "3"
+  | "2-pair"
+  | "1-pair"
+  | "high-card"
 
-const handTypeValue = (h: HandType): number =>  {
+const handTypeValue = (h: HandType): number => {
   switch (h) {
     case "5":
       return 6
@@ -57,7 +69,7 @@ class Card {
   }
 
   handValues(): Array<number> {
-    return Object.values(this.handCounts()).toSorted((a,b) => a - b)
+    return Object.values(this.handCounts()).toSorted((a, b) => a - b)
   }
 
   handType(): HandType {
@@ -70,7 +82,7 @@ class Card {
     if (_.isEqual(values, [1, 4])) {
       return "4"
     }
-    
+
     if (_.isEqual(values, [1, 1, 3])) {
       return "3"
     }
@@ -106,7 +118,10 @@ class Card {
       //   }
       // }
 
-      return parseInt(convertToHex(this.hand), 16) - parseInt(convertToHex(other.hand), 16)
+      return (
+        parseInt(convertToHex(this.hand), 16) -
+        parseInt(convertToHex(other.hand), 16)
+      )
     }
   }
 
@@ -117,13 +132,16 @@ class Card {
         return "5"
       }
 
-      const perms = getPermutations(Object.keys(handCounts).filter(h => h != "J"), handCounts["J"])
-      
-      let newHand = this.hand.replace(/J/g, "")
-      let newHands = perms.map(perm => new Card(newHand + perm.join(''), -1))
-      newHands.sort((a,b) => a.compare(b))
+      const perms = getPermutations(
+        Object.keys(handCounts).filter((h) => h != "J"),
+        handCounts["J"],
+      )
 
-      return newHands[newHands.length-1].handType()
+      let newHand = this.hand.replace(/J/g, "")
+      let newHands = perms.map((perm) => new Card(newHand + perm.join(""), -1))
+      newHands.sort((a, b) => a.compare(b))
+
+      return newHands[newHands.length - 1].handType()
     }
 
     return this.handType()
@@ -138,7 +156,10 @@ class Card {
     } else if (handTypeValue(handType) < handTypeValue(otherHandType)) {
       return -1
     } else {
-      return parseInt(convertToHex(this.hand).replace(/B/g, "1"), 16) - parseInt(convertToHex(other.hand).replace(/B/g, "1"), 16)
+      return (
+        parseInt(convertToHex(this.hand).replace(/B/g, "1"), 16) -
+        parseInt(convertToHex(other.hand).replace(/B/g, "1"), 16)
+      )
     }
   }
 }
@@ -147,8 +168,8 @@ class Cards {
   cards: Array<Card>
 
   constructor(rawInput: string) {
-    this.cards = rawInput.split('\n').map(line => {
-      let [hand, bid] = line.split(' ')
+    this.cards = rawInput.split("\n").map((line) => {
+      let [hand, bid] = line.split(" ")
       return new Card(hand, parseInt(bid))
     })
   }
@@ -156,56 +177,55 @@ class Cards {
 
 const parseInput = (rawInput: string) => new Cards(rawInput)
 
-var getPermutations = function(list, maxLen) {
+var getPermutations = function (list, maxLen) {
   // Copy initial values as arrays
-  var perm = list.map(function(val) {
-      return [val];
-  });
+  var perm = list.map(function (val) {
+    return [val]
+  })
   // Our permutation generator
-  var generate = function(perm, maxLen, currLen) {
-      // Reached desired length
-      if (currLen === maxLen) {
-          return perm;
+  var generate = function (perm, maxLen, currLen) {
+    // Reached desired length
+    if (currLen === maxLen) {
+      return perm
+    }
+    // For each existing permutation
+    for (var i = 0, len = perm.length; i < len; i++) {
+      var currPerm = perm.shift()
+      // Create new permutation
+      for (var k = 0; k < list.length; k++) {
+        perm.push(currPerm.concat(list[k]))
       }
-      // For each existing permutation
-      for (var i = 0, len = perm.length; i < len; i++) {
-          var currPerm = perm.shift();
-          // Create new permutation
-          for (var k = 0; k < list.length; k++) {
-              perm.push(currPerm.concat(list[k]));
-          }
-      }
-      // Recurse
-      return generate(perm, maxLen, currLen + 1);
-  };
+    }
+    // Recurse
+    return generate(perm, maxLen, currLen + 1)
+  }
   // Start with size 1 because of initial values
-  return generate(perm, maxLen, 1);
-};
+  return generate(perm, maxLen, 1)
+}
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  let sortedCards = input.cards.toSorted((a,b) => a.compare(b))
+  let sortedCards = input.cards.toSorted((a, b) => a.compare(b))
 
   // for (const t of sortedCards.map((card, i) => [i+1, card.hand, convertToHex(card.hand), card.handType(), handTypeValue(card.handType()) , card.handValues()])) {
   //   log(t.join("\t"))
   // }
-  
+
   let result = sortedCards
-    .map((card, i) => (i+1) * card.bid)
+    .map((card, i) => (i + 1) * card.bid)
     .reduce((acc, n) => acc + n, 0)
 
   return result
 }
 
-
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  input.cards.sort((a,b) => a.compareJokersWild(b))
+  input.cards.sort((a, b) => a.compareJokersWild(b))
 
   let result = input.cards
-    .map((card, i) => (i+1) * card.bid)
+    .map((card, i) => (i + 1) * card.bid)
     .reduce((acc, n) => acc + n, 0)
 
   return result
@@ -214,30 +234,30 @@ const part2 = (rawInput: string) => {
 run({
   part1: {
     tests: [
-//       {
-//         input: `
-// 55555 1
-// TTTTT 1
-// AAAAA 11
-// 99999 11
-// 22222 111
-// KKKKK 1111
-// 55554 2
-// 55543 3
-// 55544 4
-// 55123 5
-// 51234 6
-// 55441 7
-// A123A 7
-// T3KAT 1
-// TAKAT 1
-// TAK4T 1
-// JJJJJ 1111
-// QQQQQ 1111
+      //       {
+      //         input: `
+      // 55555 1
+      // TTTTT 1
+      // AAAAA 11
+      // 99999 11
+      // 22222 111
+      // KKKKK 1111
+      // 55554 2
+      // 55543 3
+      // 55544 4
+      // 55123 5
+      // 51234 6
+      // 55441 7
+      // A123A 7
+      // T3KAT 1
+      // TAKAT 1
+      // TAK4T 1
+      // JJJJJ 1111
+      // QQQQQ 1111
 
-// `,
-//         expected: 6440,
-//       },
+      // `,
+      //         expected: 6440,
+      //       },
       {
         input: `32T3K 765
 T55J5 684
