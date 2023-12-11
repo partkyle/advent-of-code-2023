@@ -32,10 +32,34 @@
 
 import { log } from "console"
 
-function logSimpleMap<T>(m: T[][], joiner: string = "") {
+export function logSimpleMap<T>(m: T[][], joiner: string = "") {
   for (let line of m) {
     log(line.join(joiner))
   }
 }
 
-export default logSimpleMap
+export function combinations<T>(a: T[], choose: number) {
+  function combo<T>(
+    a: T[],
+    combos: T[][],
+    start: number,
+    choose: number,
+    val: T[],
+  ) {
+    if (val.length == choose) {
+      combos.push(val)
+      return
+    }
+
+    for (let i = start; i < a.length; i++) {
+      combo(a, combos, i + 1, choose, [...val, a[i]])
+    }
+  }
+
+  let result: T[][] = []
+  for (let i = 0; i < a.length - 1; i++) {
+    combo(a, result, i + 1, choose, [a[i]])
+  }
+
+  return result
+}

@@ -1,7 +1,7 @@
 import run from "aocrunner"
 import { log } from "console"
-import logSimpleMap from "../utils/index.js"
 import _ from "lodash"
+import { combinations } from "../utils/index.js"
 
 const parseInput = (rawInput: string) =>
   rawInput.split("\n").map((line) => line.split(""))
@@ -10,32 +10,6 @@ type Coord = number[]
 
 function manhattan(a: Coord, b: Coord) {
   return Math.abs(a[0] - b[0]) + Math.abs(b[1] - a[1])
-}
-
-function combinations<T>(a: T[], choose: number) {
-  function combo<T>(
-    a: T[],
-    combos: T[][],
-    start: number,
-    choose: number,
-    val: T[],
-  ) {
-    if (val.length == choose) {
-      combos.push(val)
-      return
-    }
-
-    for (let i = start; i < a.length; i++) {
-      combo(a, combos, i + 1, choose, [...val, a[i]])
-    }
-  }
-
-  let result: T[][] = []
-  for (let i = 0; i < a.length - 1; i++) {
-    combo(a, result, i + 1, choose, [a[i]])
-  }
-
-  return result
 }
 
 const part1 = (rawInput: string) => {
