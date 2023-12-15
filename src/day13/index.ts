@@ -11,12 +11,13 @@ function debug(message?: any, ...optionalParams: any[]) {
   }
 }
 
-const parseInput = (rawInput: string) => rawInput.split('\n\n').map( section => section.split('\n'))
+const parseInput = (rawInput: string) =>
+  rawInput.split("\n\n").map((section) => section.split("\n"))
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  let results = input.map( s => getReflectValue(s))
+  let results = input.map((s) => getReflectValue(s))
 
   return _.sum(results)
 }
@@ -26,7 +27,7 @@ const part2 = (rawInput: string) => {
 
   DEBUG = true
 
-  let results = input.map( s => getReflectValue(s, true))
+  let results = input.map((s) => getReflectValue(s, true))
 
   return _.sum(results)
 }
@@ -93,19 +94,17 @@ function getReflectValue(s: string[], tolerant: boolean = false) {
   return h * 100 + v
 }
 
-
 function horizontalReflect(s: string[], tolerant: boolean = false) {
   let sumCompare = tolerant ? 1 : 0
-
 
   let indexes = []
   for (let i = 1; i < s.length; i++) {
     let rowsum = 0
     for (let r = 0; r < Math.min(i, s.length - i); r++) {
-      let [left, right] = [s[i-r-1], s[i+r]]
+      let [left, right] = [s[i - r - 1], s[i + r]]
 
       let sum = 0
-      for (let [lch, rch] of _.zip(left.split(''), right.split(''))) {
+      for (let [lch, rch] of _.zip(left.split(""), right.split(""))) {
         sum += lch == rch ? 0 : 1
       }
 
@@ -121,6 +120,11 @@ function horizontalReflect(s: string[], tolerant: boolean = false) {
 }
 
 function verticalReflect(s: string[], tolerant: boolean = false) {
-  let newmap = _.range(0, s[0].length).map( i => s.map( line => line[i] ).reverse().join(''))
+  let newmap = _.range(0, s[0].length).map((i) =>
+    s
+      .map((line) => line[i])
+      .reverse()
+      .join(""),
+  )
   return horizontalReflect(newmap, tolerant)
 }

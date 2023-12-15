@@ -36,5 +36,5 @@ run({
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: env.ONLY_TESTS == "true" || false,
+  onlyTests: true,
 })

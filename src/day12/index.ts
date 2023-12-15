@@ -5,22 +5,21 @@ import { debugPort } from "process"
 
 type Line = [string, number[]]
 
-const parseInput = (rawInput: string): Line[] => rawInput.split('\n').map( line => {
-  let parts = line.split(' ')
-  return [parts[0], parts[1].split(',').map(e => parseInt(e))]
-})
-
+const parseInput = (rawInput: string): Line[] =>
+  rawInput.split("\n").map((line) => {
+    let parts = line.split(" ")
+    return [parts[0], parts[1].split(",").map((e) => parseInt(e))]
+  })
 
 function countIt(pattern: string, counts: number[]) {
   let cache: Record<string, number> = {}
 
   function doIt(layer: number, tag: string, pattern: string, counts: number[]) {
-
     let key = JSON.stringify([pattern, counts])
-    if (key in cache) { 
+    if (key in cache) {
       return cache[key]
     }
-  
+
     if (pattern == "") {
       if (counts.length == 0) {
         // log(`[${layer}] "${tag}"`, 'GOTTEM')
@@ -30,7 +29,7 @@ function countIt(pattern: string, counts: number[]) {
     }
 
     if (counts.length == 0) {
-      if (!pattern.includes('#')) {
+      if (!pattern.includes("#")) {
         return 1
       } else {
         return 0
@@ -40,19 +39,25 @@ function countIt(pattern: string, counts: number[]) {
     // log(`[${layer}] "${tag}"`, pattern, counts)
 
     let count = 0
-    if ('.?'.includes(pattern[0])) {
-      count += doIt(layer+1, tag+'.', pattern.substring(1), counts)
+    if (".?".includes(pattern[0])) {
+      count += doIt(layer + 1, tag + ".", pattern.substring(1), counts)
     }
-  
+
     let nextIndex = counts[0]
     // log(`[${layer}] "${tag}"`, pattern, counts, `subst=${pattern.substring(0, counts[0])}`, `nextIndex=${nextIndex}`, `next="${pattern[nextIndex]}"`)
-    if ('#?'.includes(pattern[0])) {
+    if ("#?".includes(pattern[0])) {
       if (
-        !pattern.substring(0, counts[0]).includes('.') &&
-        (counts[0] <= pattern.length && !pattern.substring(0, counts[0]).includes('.')) &&
-        (counts[0] == pattern.length || pattern[counts[0]] != '#')
+        !pattern.substring(0, counts[0]).includes(".") &&
+        counts[0] <= pattern.length &&
+        !pattern.substring(0, counts[0]).includes(".") &&
+        (counts[0] == pattern.length || pattern[counts[0]] != "#")
       ) {
-        count += doIt(layer+1, tag+pattern.substring(0, counts[0]).replace(/\?/g,'#')+'.', pattern.substring(counts[0]+1), counts.slice(1))
+        count += doIt(
+          layer + 1,
+          tag + pattern.substring(0, counts[0]).replace(/\?/g, "#") + ".",
+          pattern.substring(counts[0] + 1),
+          counts.slice(1),
+        )
       }
     }
 
@@ -60,19 +65,18 @@ function countIt(pattern: string, counts: number[]) {
     return count
   }
 
-  let result = doIt(0, '', pattern, counts)
+  let result = doIt(0, "", pattern, counts)
 
   return result
 }
 
 function shame(pattern: string, counts: number[]) {
-
   let cache: Record<string, number> = {}
 
   // log(pattern, counts)
 
   function shameshame(p: number, n: number, r: number = 0) {
-    let key = JSON.stringify([p,n,r])
+    let key = JSON.stringify([p, n, r])
     // log(key, pattern.substring(p), counts.slice(n))
     if (key in cache) {
       return cache[key]
@@ -80,17 +84,18 @@ function shame(pattern: string, counts: number[]) {
 
     if (p >= pattern.length) return n == counts.length ? 1 : 0
 
-    if ('.?'.includes(pattern[p])) {
-      r += shameshame(p+1, n)
+    if (".?".includes(pattern[p])) {
+      r += shameshame(p + 1, n)
     }
 
     if (
-      '#?'.includes(pattern[p]) &&
+      "#?".includes(pattern[p]) &&
       n < counts.length &&
-      (p + counts[n] <= pattern.length && !pattern.substring(p, p+counts[n]).includes('.')) &&
-      (p + counts[n] == pattern.length || pattern[p+counts[n]] != '#')
+      p + counts[n] <= pattern.length &&
+      !pattern.substring(p, p + counts[n]).includes(".") &&
+      (p + counts[n] == pattern.length || pattern[p + counts[n]] != "#")
     ) {
-      r += shameshame(p+counts[n]+1, n+1)
+      r += shameshame(p + counts[n] + 1, n + 1)
     }
 
     cache[key] = r
@@ -103,21 +108,20 @@ function shame(pattern: string, counts: number[]) {
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  let results = input.map( ([springs, counts]) => countIt(springs, counts) )
+  let results = input.map(([springs, counts]) => countIt(springs, counts))
 
   return _.sum(results)
 }
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  
 
   let i = 0
-  let results = input.map( ([springs, counts]) => {
-    let s = Array(5).fill(springs).join('?')
+  let results = input.map(([springs, counts]) => {
+    let s = Array(5).fill(springs).join("?")
     let c = [].concat(...Array(5).fill(counts))
     return countIt(s, c)
-  } )
+  })
 
   return _.sum(results)
 }
@@ -145,7 +149,7 @@ run({
       },
       {
         input: `???????.??? 1,3`,
-        expected: 13
+        expected: 13,
       },
       {
         input: `
@@ -167,7 +171,7 @@ run({
         input: `
 ???.### 1,1,3
 `,
-        expected: 1
+        expected: 1,
       },
       {
         input: `

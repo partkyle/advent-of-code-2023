@@ -5,10 +5,11 @@ import { logSimpleMap } from "../utils/index.js"
 import _ from "lodash"
 import shasum from "shasum"
 
-const parseInput = (rawInput: string) => rawInput.split('\n').map(line => line.split(''))
+const parseInput = (rawInput: string) =>
+  rawInput.split("\n").map((line) => line.split(""))
 
-const space = '.'
-const rock = 'O'
+const space = "."
+const rock = "O"
 
 function rollNorth(input: string[][]) {
   let itChanging = true
@@ -35,8 +36,8 @@ function rollEast(input: string[][]) {
     for (let y = 0; y < input.length; y++) {
       for (let x = input[y].length - 1; x > 0; x--) {
         let ch = input[y][x]
-        if (ch == space && input[y][x-1] == rock) {
-          ;[input[y][x], input[y][x-1]] = [input[y][x-1], input[y][x]]
+        if (ch == space && input[y][x - 1] == rock) {
+          ;[input[y][x], input[y][x - 1]] = [input[y][x - 1], input[y][x]]
           itChanging = true
         }
       }
@@ -76,8 +77,8 @@ function rollWest(input: string[][]) {
     for (let y = 0; y < input.length; y++) {
       for (let x = 0; x < input[y].length; x++) {
         let ch = input[y][x]
-        if (ch == space && input[y][x+1] == rock) {
-          ;[input[y][x], input[y][x+1]] = [input[y][x+1], input[y][x]]
+        if (ch == space && input[y][x + 1] == rock) {
+          ;[input[y][x], input[y][x + 1]] = [input[y][x + 1], input[y][x]]
           itChanging = true
         }
       }
@@ -88,7 +89,7 @@ function rollWest(input: string[][]) {
 function calcLoad(input: string[][]) {
   let total = 0
   for (let y = 0; y < input.length; y++) {
-    for (let x = 0; x < input[y].length ; x++) {
+    for (let x = 0; x < input[y].length; x++) {
       let ch = input[y][x]
       if (ch == rock) {
         total += input.length - y
@@ -102,10 +103,10 @@ function calcLoad(input: string[][]) {
 function rockPositions(input: string[][]) {
   let rocks = []
   for (let y = 0; y < input.length; y++) {
-    for (let x = 0; x < input[y].length ; x++) {
+    for (let x = 0; x < input[y].length; x++) {
       let ch = input[y][x]
       if (ch == rock) {
-        rocks.push([x,y])
+        rocks.push([x, y])
       }
     }
   }
@@ -129,10 +130,10 @@ const part1 = (rawInput: string) => {
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  let copyInput = input.map(line => line.map(ch => ch))
+  let copyInput = input.map((line) => line.map((ch) => ch))
 
   let rockTrackers: string[] = []
-  let cycle: number[]= []
+  let cycle: number[] = []
   for (let i = 0; i < 1000000000; i++) {
     let rocks = hashRockList(rockPositions(copyInput))
     if (_.includes(rockTrackers, rocks)) {
