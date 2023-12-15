@@ -1,5 +1,6 @@
 import run from "aocrunner"
 import { log } from "console"
+import { env } from "process"
 
 const parseInput = (rawInput: string) => rawInput
 
@@ -35,5 +36,5 @@ run({
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: false,
+  onlyTests: env.ONLY_TESTS == "true" || false,
 })
