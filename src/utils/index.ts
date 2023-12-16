@@ -31,10 +31,11 @@
  */
 
 import { log } from "console"
+import { upperCase } from "lodash"
 
-export function logSimpleMap<T>(m: T[][], joiner: string = "") {
-  for (let line of m) {
-    log(line.join(joiner))
+export function logSimpleMap<T>(m: T[][], joiner: string = "", bounds = [[0,0], [m[0].length, m.length]]) {
+  for (let line of m.slice(Math.max(0, bounds[1][0]), Math.min(m.length, bounds[1][1]))) {
+    log(line.slice(Math.max(0, bounds[0][0]), Math.min(line.length, bounds[0][1])).join(joiner))
   }
 }
 

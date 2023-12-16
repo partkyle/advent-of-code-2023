@@ -48,10 +48,12 @@ const part2 = (rawInput: string) => {
 
   let boxes: item[][] = []
 
+  for (let i = 0; i < 256; i++) {
+    boxes[i] = []
+  }
+
   for (let s of input) {
     let i = hash(s.label)
-
-    if (!boxes[i]) boxes[i] = []
 
     switch (s.op) {
       case "-":
@@ -69,6 +71,10 @@ const part2 = (rawInput: string) => {
 
         break
     }
+  }
+
+  for (let b of boxes) {
+    log(b.map((e) => [e.label, e.op == "=" ? e.value : 0]))
   }
 
   let sum = 0
