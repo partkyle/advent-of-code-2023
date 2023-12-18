@@ -1,6 +1,5 @@
 import run from "aocrunner"
 import { dir, log } from "console"
-import { env } from "process"
 import { logSimpleMap } from "../utils/index.js"
 import _ from "lodash"
 
@@ -119,23 +118,6 @@ function doTheThing(input: string[][], origin: direction = [0, 0], dir: directio
       break
     }
 
-    // if (
-    //   beam[1][0] < 0 ||
-    //   beam[1][0] >= input[0].length ||
-    //   beam[1][1] < 0 ||
-    //   beam[1][1] >= input.length
-    // ) {
-    //   fallenBeams.push(beam)
-    //   continue
-    // }
-
-
-    // let newDirections = newDirectionsOnSpace(input[nextBeamPos[1]][nextBeamPos[0]], beam[1])
-    // log(beam[0], nextBeamPos, input[nextBeamPos[1]][nextBeamPos[0]], beam[1], newDirections)
-    // for (let newDirection of newDirections) {
-    //   beams.add([nextBeamPos, newDirection, JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    // }
-
     let moves = newDirectionsOnSpace(input[beam[0][1]][beam[0][0]], beam[1])
     for (let newDirection of moves) {
       let cloneList = JSON.parse(JSON.stringify(beam[2]))
@@ -153,43 +135,7 @@ function doTheThing(input: string[][], origin: direction = [0, 0], dir: directio
       cloneList.push(newLocation)
       beams.add([newLocation, newDirection, cloneList], fallenBeams)
     }
-    // switch (input[nextBeamPos[1]][nextBeamPos[0]]) {
-    //   case ".": {
-    //     // same direction
-    //     beams.add([nextBeamPos, beam[1], JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //     break
-    //   }
-    //   case "/": {
-    //     let newDirection = rotate90forward(beam[1])
-    //     beams.add([nextBeamPos, newDirection, JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //     break
-    //   }
-    //   case "\\": {
-    //     let newDirection = rotate90back(beam[1])
-    //     beams.add([nextBeamPos, newDirection, JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //     break
-    //   }
-    //   case "-": {
-    //     // splitter
-    //     if (_.isEqual(beam[1], down) || _.isEqual(beam[1], up)) {
-    //       beams.add([nextBeamPos, left, JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //       beams.add([nextBeamPos, right, JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //     } else {
-    //       beams.add([nextBeamPos, beam[1], JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //     }
-    //     break
-    //   }
-    //   case "|": {
-    //     // splitter
-    //     if (_.isEqual(beam[1], left) || _.isEqual(beam[1], right)) {
-    //       beams.add([nextBeamPos, up, JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //       beams.add([nextBeamPos, down, JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //     } else {
-    //       beams.add([nextBeamPos, beam[1], JSON.parse(JSON.stringify(beam[2]))], fallenBeams)
-    //     }
-    //     break
-    //   }
-    // }
+
   }
 
   let cinput = JSON.parse(JSON.stringify(input))
@@ -217,10 +163,13 @@ const part1 = (rawInput: string) => {
 
 
 
+  // render the chunk of the map and clear the console to animate ie
   // ;(async function() {
   //   let b = fallenBeams[3]
-  //   for (let i = 0; i < b[2].length; i++) {
-  //     let node = b[2][i]
+  //   let beam = fallenBeams[3]
+  //   let route = beam[2]
+  //   for (let i = 0; i < route.length; i++) {
+  //     let node = route[i]
   //     input[node[1]][node[0]] = "#"
   //     log(node)
   //     logSimpleMap(input, '', [[node[0]-10, node[0]+10], [node[1]-10, node[1]+10]])
