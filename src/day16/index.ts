@@ -2,6 +2,8 @@ import run from "aocrunner"
 import { dir, log } from "console"
 import { logSimpleMap } from "../utils/index.js"
 import _ from "lodash"
+import { json } from "stream/consumers"
+import { getMaxListeners } from "process"
 
 const parseInput = (rawInput: string) =>
   rawInput.split("\n").map((l) => l.split(""))
