@@ -1,14 +1,13 @@
 import run from "aocrunner"
 import { log } from "console"
-import { max } from "lodash"
-import { env } from "process"
 
-const parseRuleSet = (rule: string) => {
-  let ruleset = []
+const parseRuleSet = (rule: string) : rule => {
   let [condition, destination] = rule.split(":")
   if (!destination) {
-    ruleset.push(condition)
-  } else {
+    return [condition]
+  }
+
+
     let [key, value] = condition.split("<")
     let cmp = "<"
     if (!value) {
@@ -16,21 +15,56 @@ const parseRuleSet = (rule: string) => {
       cmp = ">"
     }
 
-    ruleset.push(key)
-    ruleset.push(cmp)
-    ruleset.push(parseInt(value))
-    ruleset.push(destination)
-  }
-  return ruleset
+    return [key, cmp, parseInt(value), destination]
 }
 
-const parseRule = (rule: string) => {
+const parseRule = (rule: string): [string, rule[]] => {
   let start = rule.indexOf("{")
   let bucket = rule.substring(0, start)
 
   let rules = rule.substring(start + 1, rule.length - 1).split(",")
 
   return [bucket, rules.map(parseRuleSet)]
+}
+
+type conditionalRule = [string, string, number, string]
+
+type destinationOnlyRule = [string]
+
+type rule = conditionalRule | destinationOnlyRule
+
+type part = Map<string, number>
+
+class Input {
+  rules: [string, rule[]][]
+  parts: part[]
+
+  constructor(rawInput: string) {
+    let [rules, parts] = rawInput.split("\n\n")
+
+    let partObjects = parts
+      .split("\n")
+      .map((p) =>
+        p
+          .replace("{", "")
+          .replace("}", "")
+          .split(",")
+          .map((e) => {
+            let [k, v] = e.split("=")
+            return [k, parseInt(v)]
+          }),
+      )
+      .map((e) => {
+        let o = new Map()
+        for (let [key, value] of e) {
+          o.set(key, value)
+        }
+        return o
+      })
+
+      this.rules = rules.split("\n").map(parseRule)
+      this.parts = partObjects
+    }
 }
 
 const parseInput = (rawInput: string) => {
@@ -60,9 +94,9 @@ const parseInput = (rawInput: string) => {
 }
 
 function findRuleByBucket(
-  rules: [[string, string, number, string] | string][],
+  rules: [string, rule[]][],
   name: string,
-) {
+) : [string, rule[]] | undefined {
   for (let rule of rules) {
     if (rule[0] == name) {
       return rule
@@ -70,35 +104,10 @@ function findRuleByBucket(
   }
 }
 
-function findRuleByBucketExpando(
-  rules: [[string, string, number, string] | string][],
-  name: string,
-): [string, [string, string, number, string] | [string] | undefined] {
-  let [_name, ruleset] = findRuleByBucket(rules, name)
-
-  if (!ruleset) {
-    return [name, undefined]
-  }
-
-  for (let rule of ruleset) {
-    while (!"AR".includes(rule[rule.length - 1])) {
-      let lastVal = rule.splice(rule.length - 1, 1)
-      let [name, newRuleset] = findRuleByBucketExpando(rules, lastVal)
-      log(lastVal, "--------", newRuleset)
-      for (let rs of newRuleset) {
-        rule.push(rs)
-      }
-
-      log(ruleset)
-    }
-  }
-
-  return [name, ruleset]
-}
-
-const mapResultOrBucket = (v: string) => {
+const mapResultOrBucket = (v: string): [string | undefined, string | undefined] =>  {
   let result = undefined
   let bucket = undefined
+
   if (v == "A") {
     result = "A"
   } else if (v == "R") {
@@ -111,32 +120,34 @@ const mapResultOrBucket = (v: string) => {
   return [result, bucket]
 }
 
-const sumXmas = (part: Record<string, number>): number => {
-  return part["x"] + part["m"] + part["a"] + part["s"]
+const sumXmas = (part: Map<string, number>): number => {
+  return (part.get("x") || 0) + (part.get("m") || 0) + (part.get("a") || 0) + (part.get("s") || 0)
 }
 
 const part1 = (rawInput: string) => {
-  const [rules, parts] = parseInput(rawInput)
+  const input = new Input(rawInput)
 
-  let results = []
-  for (let part of parts) {
+  let sum = 0
+  for (let part of input.parts) {
     let result = undefined
     let bucket = "in"
 
     while (!result) {
-      let [_name, ruleset] = findRuleByBucket(rules, bucket)
+      let ruleExploder = findRuleByBucket(input.rules, bucket)
+      if (!ruleExploder) continue
+      let [_name, ruleset] = ruleExploder
       for (let r of ruleset) {
         if (r.length == 1) {
           ;[result, bucket] = mapResultOrBucket(r[0])
           break
         } else {
           if (r[1] == "<") {
-            if (part[r[0]] < r[2]) {
+            if ((part.get(r[0]) || 0) < r[2]) {
               ;[result, bucket] = mapResultOrBucket(r[3])
               break
             }
           } else {
-            if (part[r[0]] > r[2]) {
+            if ((part.get(r[0]) || 0) > r[2]) {
               ;[result, bucket] = mapResultOrBucket(r[3])
               break
             }
@@ -145,12 +156,7 @@ const part1 = (rawInput: string) => {
       }
     }
 
-    results.push([result, part])
-  }
-
-  let sum = 0
-  for (let [status, part] of results) {
-    if (status == "A") {
+    if (result == 'A') {
       sum += sumXmas(part)
     }
   }
@@ -174,8 +180,6 @@ function clone<T>(a: T[]): T[] {
 
 function doTheTHing(rules: any[], start: string) {
   let [name, rulesets] = findRuleByBucket(rules, start)
-
-  // log(name, rulesets)
 
   if (!rulesets) {
     return []
@@ -238,8 +242,6 @@ const part2 = (rawInput: string) => {
 
   let sum = 0
 
-  log("=========================")
-  log("finished", finsihedConditions.length)
   let ranges = []
   for (let [cons, d] of finsihedConditions) {
     let whatsLeft = {
@@ -256,7 +258,6 @@ const part2 = (rawInput: string) => {
         } else {
           whatsLeft[c[0]][1] = Math.min(whatsLeft[c[0]][1], c[2])
         }
-        log(c, whatsLeft)
       }
 
       let product = 1
@@ -269,8 +270,6 @@ const part2 = (rawInput: string) => {
       ranges.push(whatsLeft)
     }
   }
-
-  log(ranges)
 
   // in{s<1351:px,qqz}
   /*
