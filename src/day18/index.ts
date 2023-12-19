@@ -83,7 +83,7 @@ function shoelace(vertices: number[][]) {
       (vertices[i + 1][1] - vertices[i][1])
   }
 
-  return Math.abs(lace) / 2 + 1
+  return Math.abs(lace) / 2
 }
 
 function readInput(
@@ -103,7 +103,7 @@ function readInput(
     current = nextPos
   }
 
-  return [lines, steps / 2]
+  return [lines, steps]
 }
 
 function readInputHex(
@@ -127,7 +127,7 @@ function readInputHex(
     current = nextPos
   }
 
-  return [lines, steps / 2]
+  return [lines, steps]
 }
 
 const part1 = (rawInput: string) => {
@@ -140,7 +140,7 @@ const part1 = (rawInput: string) => {
     vertices.push(right)
   }
 
-  return shoelace(vertices) + perimeter
+  return shoelace(vertices) + perimeter / 2 + 1
 }
 
 const part2 = (rawInput: string) => {
@@ -153,7 +153,7 @@ const part2 = (rawInput: string) => {
     vertices.push(right)
   }
 
-  return shoelace(vertices) + perimeter
+  return shoelace(vertices) + perimeter / 2 + 1
 }
 
 run({
@@ -206,5 +206,5 @@ U 2 (#7a21e3)
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: false,
+  onlyTests: true,
 })
