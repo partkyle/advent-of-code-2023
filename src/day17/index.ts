@@ -5,7 +5,8 @@ import { env } from "process"
 import { logSimpleMap } from "../utils/index.js"
 import assert from "assert"
 
-const parseInput = (rawInput: string) => rawInput.split("\n").map(l => l.split('').map(s => parseInt(s)))
+const parseInput = (rawInput: string) =>
+  rawInput.split("\n").map((l) => l.split("").map((s) => parseInt(s)))
 
 const North = [0, -1]
 const South = [0, 1]
@@ -13,25 +14,37 @@ const East = [-1, 0]
 const West = [1, 0]
 
 function invertDirection(d: number[]) {
-  return d.map(n => n == 0 ? 0 : -n)
+  return d.map((n) => (n == 0 ? 0 : -n))
 }
 
 function addDir(a: number[], b: number[]) {
-  return _.zip(a, b).map(l => _.sum(l))
+  return _.zip(a, b).map((l) => _.sum(l))
 }
 
 function valueAt(input: number[][], pos: number[]) {
   return input[pos[1]][pos[0]]
 }
 
-function countToEnd(input: number[][], visited: number[][], start: number[], end: number[], count: number, prevDirection: number[][]): number {
+function countToEnd(
+  input: number[][],
+  visited: number[][],
+  start: number[],
+  end: number[],
+  count: number,
+  prevDirection: number[][],
+): number {
   log(start, count, prevDirection)
-  if (start[0] < 0 || start[0] >= input[0].length || start[1] >= input[0].length || start[1] < 0) {
-    log('out of bounds:', start)
+  if (
+    start[0] < 0 ||
+    start[0] >= input[0].length ||
+    start[1] >= input[0].length ||
+    start[1] < 0
+  ) {
+    log("out of bounds:", start)
     return Number.MAX_SAFE_INTEGER
   }
 
-  if (visited.some(v => _.isEqual(start, v))) {
+  if (visited.some((v) => _.isEqual(start, v))) {
     log("we been here:", start, visited)
     return Number.MAX_SAFE_INTEGER
   }
@@ -45,29 +58,44 @@ function countToEnd(input: number[][], visited: number[][], start: number[], end
     return count + thisValue
   }
 
-  return Math.min(...[North, South, East, West].map(nextDir => {
-    if (prevDirection.length > 0 && _.isEqual(nextDir, invertDirection(prevDirection[prevDirection.length - 1]))) {
-      log('we can never go back', nextDir, prevDirection)
-      return Number.MAX_SAFE_INTEGER
-    }
+  return Math.min(
+    ...[North, South, East, West].map((nextDir) => {
+      if (
+        prevDirection.length > 0 &&
+        _.isEqual(
+          nextDir,
+          invertDirection(prevDirection[prevDirection.length - 1]),
+        )
+      ) {
+        log("we can never go back", nextDir, prevDirection)
+        return Number.MAX_SAFE_INTEGER
+      }
 
-    let newPrevDirection = JSON.parse(JSON.stringify(prevDirection))
-    if (newPrevDirection.every(d => _.isEqual(d, nextDir))) {
-      newPrevDirection.push(nextDir)
-    } else {
-      log('should be a new dir')
-      newPrevDirection = []
-    }
+      let newPrevDirection = JSON.parse(JSON.stringify(prevDirection))
+      if (newPrevDirection.every((d) => _.isEqual(d, nextDir))) {
+        newPrevDirection.push(nextDir)
+      } else {
+        log("should be a new dir")
+        newPrevDirection = []
+      }
 
-    if (newPrevDirection.length >= 3) {
-      log('same direction too many times')
-      return Number.MAX_SAFE_INTEGER
-    }
+      if (newPrevDirection.length >= 3) {
+        log("same direction too many times")
+        return Number.MAX_SAFE_INTEGER
+      }
 
-    let d = addDir(start, nextDir)
-    log('at', start, 'go', nextDir, 'to', d)
-    return countToEnd(input, newVisited, d, end, count + thisValue, newPrevDirection)
-  }))
+      let d = addDir(start, nextDir)
+      log("at", start, "go", nextDir, "to", d)
+      return countToEnd(
+        input,
+        newVisited,
+        d,
+        end,
+        count + thisValue,
+        newPrevDirection,
+      )
+    }),
+  )
 }
 
 function bfs(input: number[][], start: number[], end: number[]) {
@@ -81,8 +109,6 @@ function bfs(input: number[][], start: number[], end: number[]) {
     if (_.isEqual(v, end)) {
       return v
     }
-
-
   }
 }
 
@@ -105,20 +131,24 @@ function djikstra(input: number[][], start: number[], end: number[]) {
   dist[key(start)] = 0
 
   while (q.length > 0) {
-    q.sort((a,b) => dist[key(a)] - dist[key(b)])
+    q.sort((a, b) => dist[key(a)] - dist[key(b)])
     // log(q.map(e => [e, dist[key(e)]]))
     let u = q.shift()
 
     if (!u) {
-      log('undefined u somehow')
+      log("undefined u somehow")
       continue
     }
 
     // for all neighbors
     for (let d of [North, South, East, West]) {
-
       let newPos = addDir(d, u)
-      if (newPos[0] < 0 || newPos[0] >= input[0].length || newPos[1] >= input.length || newPos[1] < 0) {
+      if (
+        newPos[0] < 0 ||
+        newPos[0] >= input[0].length ||
+        newPos[1] >= input.length ||
+        newPos[1] < 0
+      ) {
         continue
       }
 
@@ -154,12 +184,10 @@ function djikstra(input: number[][], start: number[], end: number[]) {
     }
   }
 
-
   return [dist, prev]
 }
 
 function djikstra2(input: number[][], start: number[], end: number[]) {
-
   let q = []
   let dist: number[][] = []
   let prev: number[][] = []
@@ -168,17 +196,20 @@ function djikstra2(input: number[][], start: number[], end: number[]) {
     prev[y] = []
     for (let x = 0; x < input[y].length; x++) {
       dist[y][x] = Number.MAX_SAFE_INTEGER
-      q.push([x,y])
+      q.push([x, y])
     }
   }
 
-  while (q.length > 0) {
-    
-  }
+  while (q.length > 0) {}
 }
 
 function inBounds(input: number[][], pos: number[]) {
-  return pos[0] >= 0 && pos[0] < input[0].length && pos[1] >= 0 && pos[1] < input.length
+  return (
+    pos[0] >= 0 &&
+    pos[0] < input[0].length &&
+    pos[1] >= 0 &&
+    pos[1] < input.length
+  )
 }
 
 function dijstraYt(input: number[][], start: number[], end: number[]) {
@@ -187,14 +218,14 @@ function dijstraYt(input: number[][], start: number[], end: number[]) {
   let pq = [
     {
       heat: 0,
-      pos: [0,0],
-      dir: [0,0],
+      pos: [0, 0],
+      dir: [0, 0],
       count: 0,
-    }
+    },
   ]
 
   while (pq.length > 0) {
-    pq.sort((a, b) => a['heat'] - b['heat'])
+    pq.sort((a, b) => a["heat"] - b["heat"])
     let u = pq.shift()
     assert(u)
 
@@ -213,37 +244,31 @@ function dijstraYt(input: number[][], start: number[], end: number[]) {
 
     seen.add(seenKey)
 
-    if (u.count < 3 && !_.isEqual(u.dir, [0,0])) {
+    if (u.count < 3 && !_.isEqual(u.dir, [0, 0])) {
       let newPos = addDir(u.pos, u.dir)
       if (inBounds(input, newPos)) {
-        pq.push(
-          {
-            heat: u.heat + valueAt(input, newPos),
-            pos: newPos,
-            dir: u.dir,
-            count: u.count + 1,
-          }
-        )
+        pq.push({
+          heat: u.heat + valueAt(input, newPos),
+          pos: newPos,
+          dir: u.dir,
+          count: u.count + 1,
+        })
       }
     }
-
 
     for (let dir of [North, South, East, West]) {
       if (!_.isEqual(dir, u.dir) && !_.isEqual(dir, invertDirection(u.dir))) {
         let newPos = addDir(u.pos, dir)
         if (inBounds(input, newPos)) {
-          pq.push(
-            {
-              heat: u.heat + valueAt(input, newPos),
-              pos: newPos,
-              dir: dir,
-              count: 1,
-            }
-          )
+          pq.push({
+            heat: u.heat + valueAt(input, newPos),
+            pos: newPos,
+            dir: dir,
+            count: 1,
+          })
         }
       }
     }
-
   }
 
   return
@@ -255,14 +280,14 @@ function dijstraYtPt2(input: number[][], start: number[], end: number[]) {
   let pq = [
     {
       heat: 0,
-      pos: [0,0],
-      dir: [0,0],
+      pos: [0, 0],
+      dir: [0, 0],
       count: 0,
-    }
+    },
   ]
 
   while (pq.length > 0) {
-    pq.sort((a, b) => a['heat'] - b['heat'])
+    pq.sort((a, b) => a["heat"] - b["heat"])
     let u = pq.shift()
     assert(u)
 
@@ -281,33 +306,29 @@ function dijstraYtPt2(input: number[][], start: number[], end: number[]) {
 
     seen.add(seenKey)
 
-    if (u.count < 10 && !_.isEqual(u.dir, [0,0])) {
+    if (u.count < 10 && !_.isEqual(u.dir, [0, 0])) {
       let newPos = addDir(u.pos, u.dir)
       if (inBounds(input, newPos)) {
-        pq.push(
-          {
-            heat: u.heat + valueAt(input, newPos),
-            pos: newPos,
-            dir: u.dir,
-            count: u.count + 1,
-          }
-        )
+        pq.push({
+          heat: u.heat + valueAt(input, newPos),
+          pos: newPos,
+          dir: u.dir,
+          count: u.count + 1,
+        })
       }
     }
 
-    if (u.count >= 4 || _.isEqual([0,0], u.dir)) {
+    if (u.count >= 4 || _.isEqual([0, 0], u.dir)) {
       for (let dir of [North, South, East, West]) {
         if (!_.isEqual(dir, u.dir) && !_.isEqual(dir, invertDirection(u.dir))) {
           let newPos = addDir(u.pos, dir)
           if (inBounds(input, newPos)) {
-            pq.push(
-              {
-                heat: u.heat + valueAt(input, newPos),
-                pos: newPos,
-                dir: dir,
-                count: 1,
-              }
-            )
+            pq.push({
+              heat: u.heat + valueAt(input, newPos),
+              pos: newPos,
+              dir: dir,
+              count: 1,
+            })
           }
         }
       }
@@ -317,14 +338,13 @@ function dijstraYtPt2(input: number[][], start: number[], end: number[]) {
   return
 }
 
-
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
   let start = [0, 0]
   let end = [input[0].length - 1, input.length - 1]
 
-  let result  = dijstraYt(input, start, end)
+  let result = dijstraYt(input, start, end)
 
   return result && result.heat
 }
@@ -335,7 +355,7 @@ const part2 = (rawInput: string) => {
   let start = [0, 0]
   let end = [input[0].length - 1, input.length - 1]
 
-  let result  = dijstraYtPt2(input, start, end)
+  let result = dijstraYtPt2(input, start, end)
 
   return result && result.heat
 }

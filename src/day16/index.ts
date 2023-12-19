@@ -100,8 +100,12 @@ function newDirectionsOnSpace(ch: string, dir: direction) {
   return []
 }
 
-function doTheThing(input: string[][], origin: direction = [0, 0], dir: direction = right) {
-  log('origin', origin, 'dir', dir)
+function doTheThing(
+  input: string[][],
+  origin: direction = [0, 0],
+  dir: direction = right,
+) {
+  log("origin", origin, "dir", dir)
   let initialBeam: beam = [origin, dir, [origin]]
   let fallenBeams: beam[] = []
 
@@ -137,7 +141,6 @@ function doTheThing(input: string[][], origin: direction = [0, 0], dir: directio
       cloneList.push(newLocation)
       beams.add([newLocation, newDirection, cloneList], fallenBeams)
     }
-
   }
 
   let cinput = JSON.parse(JSON.stringify(input))
@@ -145,7 +148,7 @@ function doTheThing(input: string[][], origin: direction = [0, 0], dir: directio
   let count = 0
   for (let beam of fallenBeams) {
     for (let node of beam[2]) {
-      if (cinput[node[1]][node[0]] != '#') {
+      if (cinput[node[1]][node[0]] != "#") {
         count++
       }
       cinput[node[1]][node[0]] = "#"
@@ -161,9 +164,6 @@ const part1 = (rawInput: string) => {
   logSimpleMap(input)
 
   let count = doTheThing(input)
-
-
-
 
   // render the chunk of the map and clear the console to animate ie
   // ;(async function() {
@@ -181,8 +181,6 @@ const part1 = (rawInput: string) => {
   //   }
   // }())
 
-
-
   log()
   log()
   log()
@@ -196,7 +194,6 @@ const part1 = (rawInput: string) => {
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  
   let max = 0
   for (let i = 0; i < input.length; i++) {
     {
@@ -207,7 +204,6 @@ const part2 = (rawInput: string) => {
     }
   }
   for (let i = 0; i < input.length; i++) {
-
     {
       let count = doTheThing(input, [input[i].length - 1, i], left)
       if (count > max) {
@@ -216,7 +212,6 @@ const part2 = (rawInput: string) => {
     }
   }
   for (let i = 0; i < input.length; i++) {
-
     {
       let count = doTheThing(input, [i, 0], down)
       if (count > max) {
@@ -225,7 +220,6 @@ const part2 = (rawInput: string) => {
     }
   }
   for (let i = 0; i < input.length; i++) {
-
     {
       let count = doTheThing(input, [i, input.length - 1], up)
       if (count > max) {
@@ -237,7 +231,7 @@ const part2 = (rawInput: string) => {
   return max
 }
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 run({
   part1: {
     tests: [
