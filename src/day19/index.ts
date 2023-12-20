@@ -1,21 +1,20 @@
 import run from "aocrunner"
 import { log } from "console"
 
-const parseRuleSet = (rule: string) : rule => {
+const parseRuleSet = (rule: string): rule => {
   let [condition, destination] = rule.split(":")
   if (!destination) {
     return [condition]
   }
 
+  let [key, value] = condition.split("<")
+  let cmp = "<"
+  if (!value) {
+    ;[key, value] = condition.split(">")
+    cmp = ">"
+  }
 
-    let [key, value] = condition.split("<")
-    let cmp = "<"
-    if (!value) {
-      ;[key, value] = condition.split(">")
-      cmp = ">"
-    }
-
-    return [key, cmp, parseInt(value), destination]
+  return [key, cmp, parseInt(value), destination]
 }
 
 const parseRule = (rule: string): [string, rule[]] => {
@@ -62,9 +61,9 @@ class Input {
         return o
       })
 
-      this.rules = rules.split("\n").map(parseRule)
-      this.parts = partObjects
-    }
+    this.rules = rules.split("\n").map(parseRule)
+    this.parts = partObjects
+  }
 }
 
 const parseInput = (rawInput: string) => {
@@ -96,7 +95,7 @@ const parseInput = (rawInput: string) => {
 function findRuleByBucket(
   rules: [string, rule[]][],
   name: string,
-) : [string, rule[]] | undefined {
+): [string, rule[]] | undefined {
   for (let rule of rules) {
     if (rule[0] == name) {
       return rule
@@ -104,7 +103,9 @@ function findRuleByBucket(
   }
 }
 
-const mapResultOrBucket = (v: string): [string | undefined, string | undefined] =>  {
+const mapResultOrBucket = (
+  v: string,
+): [string | undefined, string | undefined] => {
   let result = undefined
   let bucket = undefined
 
@@ -121,7 +122,12 @@ const mapResultOrBucket = (v: string): [string | undefined, string | undefined] 
 }
 
 const sumXmas = (part: Map<string, number>): number => {
-  return (part.get("x") || 0) + (part.get("m") || 0) + (part.get("a") || 0) + (part.get("s") || 0)
+  return (
+    (part.get("x") || 0) +
+    (part.get("m") || 0) +
+    (part.get("a") || 0) +
+    (part.get("s") || 0)
+  )
 }
 
 const part1 = (rawInput: string) => {
@@ -156,7 +162,7 @@ const part1 = (rawInput: string) => {
       }
     }
 
-    if (result == 'A') {
+    if (result == "A") {
       sum += sumXmas(part)
     }
   }

@@ -79,7 +79,7 @@ export function combinations<T>(a: T[], choose: number) {
   return result
 }
 
-function* mapIter<T,U>(iter: Iterable<T>, mapper: (e: T) => U ) {
+function* mapIter<T, U>(iter: Iterable<T>, mapper: (e: T) => U) {
   for (const val of iter) {
     yield mapper(val)
   }

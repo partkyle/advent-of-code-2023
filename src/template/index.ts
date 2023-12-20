@@ -1,6 +1,5 @@
 import run from "aocrunner"
 import { log } from "console"
-import { env } from "process"
 
 const parseInput = (rawInput: string) => rawInput
 
