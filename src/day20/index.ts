@@ -2,6 +2,8 @@ import run from "aocrunner"
 import { log } from "console"
 import { sign } from "crypto"
 
+import { findlcm } from "../utils/index.js"
+
 type moduleType = "button" | "broadcaster" | "%" | "&"
 
 const getType = (s: string): moduleType => {
@@ -52,16 +54,11 @@ type broadcastModule = {
   type: "broadcaster"
 } & baseModule
 
-type outputModule = {
-  type: "output"
-} & baseModule
-
 type module =
   | buttonModule
   | flipFlopModule
   | conjunctionModule
   | broadcastModule
-  | outputModule
 
 const lo = "lo"
 const hi = "hi"
@@ -115,10 +112,6 @@ const parseInput = (rawInput: string): Record<string, module> => {
     }
   }
 
-  // always include the output module
-
-  modules["output"] = { type: "output", name: "output", outputs: [] }
-
   return modules
 }
 
@@ -134,6 +127,7 @@ const sendSignal = (
 
   if (mod === undefined) {
     // not defined, unsure why we have to do this
+    // IT'S BECAUSE PART 2 HAD SOMETHING TO DO WITH 'rx'
     return outputs
   }
 
@@ -198,10 +192,59 @@ const part1 = (rawInput: string) => {
   return loCount * hiCount
 }
 
+function findWhatOutputsIAmIn(
+  input: Record<string, module>,
+  needle: string,
+  layer: number = 0,
+) {
+  if (needle == "broadcaster") {
+    return []
+  }
+
+  let results = []
+
+  log("looking for", needle, layer)
+
+  for (let [name, mod] of Object.entries(input)) {
+    if (mod.outputs.includes(needle)) {
+      results.push(name) //, ...findWhatOutputsIAmIn(input, name, layer + 1))
+    }
+  }
+
+  return results
+}
+
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
 
-  return
+  let count = 1
+  let results: Record<string, number> = { ln: -1, db: -1, vq: -1, tf: -1 }
+  while (Object.values(results).some((r) => r == -1)) {
+    let signals: [string, signal, string][] = [["button", lo, "broadcaster"]]
+    while (signals.length > 0) {
+      let s = signals.shift()
+      if (s === undefined) {
+        throw "wut?"
+      }
+
+      let [from, sig, to] = s
+
+      if (["ln", "db", "vq", "tf"].includes(from) && sig == hi) {
+        if (results[from] == -1) {
+          results[from] = count
+        }
+        log(from, count)
+      }
+
+      let newSigs = sendSignal(input, from, sig, to)
+      signals.push(...newSigs)
+    }
+    count++
+  }
+
+  log(results)
+
+  return findlcm(Object.values(results))
 }
 
 run({
